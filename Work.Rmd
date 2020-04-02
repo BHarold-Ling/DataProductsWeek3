@@ -1,0 +1,61 @@
+---
+title: "Work"
+author: "Bruce H"
+date: "4/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r echo=FALSE,results='hide',message=FALSE,warning=FALSE}
+RNGversion("3.6.0")
+library(caret)
+library(plotly)
+```
+
+
+```{r cache=TRUE}
+training <- read.csv("pml-training.csv", stringsAsFactors = FALSE)
+```
+
+
+Much smaller set for sample plotting
+
+```{r}
+set.seed(1001)
+minitrain <- createDataPartition(training$classe, p=0.1, list=FALSE)
+tr2m = training[minitrain,]
+tr2m$classe <- as.factor(tr2m$classe)
+```
+
+Sample plot in plot.ly
+
+```{r}
+plot_ly(
+    x = ~tr2m$roll_belt,
+    y = ~tr2m$magnet_dumbbell_y,
+    z = ~tr2m$magnet_dumbbell_z,
+    color = ~tr2m$classe,
+    type = "scatter3d",
+    mode = "markers",
+    size = 4
+)
+```
+
+
+```{r}
+plot_ly(
+    x = ~tr2m$roll_belt,
+    y = ~tr2m$magnet_dumbbell_y,
+    z = ~tr2m$magnet_dumbbell_z,
+    color = ~tr2m$user_name,
+    type = "scatter3d",
+    mode = "markers",
+    size = 4
+)
+```
+
+

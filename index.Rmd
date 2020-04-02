@@ -1,0 +1,77 @@
+---
+title: "Graph of Predictors for Weight Lifting"
+author: "B Harold"
+date: "2020-04-02"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Top Predictors Colored by Outcome
+
+```{r echo=FALSE,results='hide',message=FALSE,warning=FALSE}
+RNGversion("3.6.0")
+library(caret)
+library(plotly)
+```
+
+
+```{r cache=TRUE}
+training <- read.csv("pml-training.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+set.seed(1001)
+minitrain <- createDataPartition(training$classe, p=0.1, list=FALSE)
+tr2m = training[minitrain,]
+tr2m$classe <- as.factor(tr2m$classe)
+roll_belt <- tr2m$roll_belt
+magnet_dumbbell_y <- tr2m$magnet_dumbbell_y
+magnet_dumbbell_z <- tr2m$magnet_dumbbell_z
+classe <- tr2m$classe
+user_name <- tr2m$user_name
+```
+
+The dimensions here are the top three predictors in my previous study of this data, and the color indicates the outcome.  We see distinct clumping that is not directly related to outcome.
+
+```{r}
+plot_ly(
+    x = ~roll_belt,
+    y = ~magnet_dumbbell_y,
+    z = ~magnet_dumbbell_z,
+    color = ~classe,
+    type = "scatter3d",
+    mode = "markers",
+    size = 4
+)
+```
+
+
+
+## Top Predictors Colored by Subject
+
+Here we color by the subject name instead, and this shows the source of this clumping.
+
+```{r}
+plot_ly(
+    x = ~roll_belt,
+    y = ~magnet_dumbbell_y,
+    z = ~magnet_dumbbell_z,
+    color = ~user_name,
+    type = "scatter3d",
+    mode = "markers",
+    size = 4
+)
+```
+
+## References
+
+The data comes from this study.
+
+Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013. 
+
+<http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har>
+
+Plotted with plotly (<https://plotly.com>).
