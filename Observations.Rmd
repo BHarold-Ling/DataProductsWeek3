@@ -1,0 +1,93 @@
+---
+title: "Observations on Weightlifting Data"
+author: "B Harold"
+date: "6/22/2020"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Synopsis
+
+This is a brief example of 3D plotting and a discussion of what we can learn from these specific plots.  We see that our key predictors have values that are clustered by subject, and we identify one anomaly in the data.
+
+# Preparation
+
+```{r results='hide',message=FALSE,warning=FALSE}
+# Libraries and Setting for Random Numbers
+RNGversion("3.6.0")
+library(caret)
+library(plotly)
+```
+
+```{r cache=TRUE}
+# Reading local copy of data
+training <- read.csv("pml-training.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+# Get Subset of Data
+set.seed(1001)
+minitrain <- createDataPartition(training$classe, p=0.1, list=FALSE)
+tr2m = training[minitrain,]
+tr2m$classe <- as.factor(tr2m$classe)
+roll_belt <- tr2m$roll_belt
+magnet_dumbbell_y <- tr2m$magnet_dumbbell_y
+magnet_dumbbell_z <- tr2m$magnet_dumbbell_z
+classe <- tr2m$classe
+user_name <- tr2m$user_name
+```
+
+# Plot Highlighting Manner
+
+Here I plot the top three predictors, as determined by my predictive model, and use color to indicate the manner in which the exercise was performed.  I have used a stratified random sampling of the data for the sake of performance.
+
+These are interactive 3D plots, so you can turn them and zoom in.
+
+```{r}
+plot_ly(
+    x = ~roll_belt,
+    y = ~magnet_dumbbell_y,
+    z = ~magnet_dumbbell_z,
+    color = ~classe,
+    type = "scatter3d",
+    mode = "markers",
+    size = 4
+)
+```
+
+We should see right away that there are four distinct clumps, but they do not correspond to the five manners of the exercise.
+
+## Top Predictors Colored by Subject
+
+Because we have a small number of clumps and a small number of subjects, it is natural that we should see if these clusters are related to the subjects.  I created the same plot coloring by subject, and we see that each subject's readings are part of one cluster.  Two subjects (Adelmo and Charles) are adjacent with a little overlap, and two others have heavy overlap in their common cluster (Carliltos and Jeremy).
+
+```{r}
+plot_ly(
+    x = ~roll_belt,
+    y = ~magnet_dumbbell_y,
+    z = ~magnet_dumbbell_z,
+    color = ~user_name,
+    type = "scatter3d",
+    mode = "markers",
+    size = 4
+)
+```
+
+# An Anomaly
+
+This combination of plots also shows an anomaly in the data.  There are two unexpected lines of points in manner D of subject  Eurico.  These are a series of points that share the same values for magnet_dumbell_y and magnet_dumbell_z, but have variation in roll_belt.  This could indicate a problem with one of the sensors.  We should also consider that we could also have other groups of points that share values for magnet_dumbell_y and magnet_dumbell_z but don't have variation in roll_belt.  In this case the points would be plotted together and would not show us in this visualization.
+
+## References
+
+The data comes from this study.
+
+Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013. 
+
+<http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har>
+
+Plotted with plotly (<https://plotly.com>).
