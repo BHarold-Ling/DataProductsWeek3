@@ -1,7 +1,7 @@
 ---
 title: "Observations on Weightlifting Data"
 author: "B Harold"
-date: "6/22/2020"
+date: "2020-06-22"
 output: 
   html_document: 
     keep_md: yes
